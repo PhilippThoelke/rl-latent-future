@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-import time
+import gc
 
 class Environment:
 
@@ -75,9 +75,10 @@ class Environment:
 
         if self.draw:
             if plt.fignum_exists(self.fig.number):
-                self._draw(delta)
+                self._draw(delta=delta)
                 if done and self.autoclose:
                     plt.close()
+                    gc.collect()
             else:
                 done = True
         return self.state(), reward, done
@@ -91,8 +92,10 @@ class Environment:
         self.vel = np.zeros(2, dtype=np.float32)
         self.steps = 0
         self.cumulative_reward = 0
+        if self.draw:
+            self._draw
 
-    def _draw(self, delta):
+    def _draw(self, delta=None):
         self.title.set_text(Environment.PLOT_TITLE.format(self.steps, self.cumulative_reward))
 
         self.marker.set_xdata(self.pos[0])
@@ -101,7 +104,7 @@ class Environment:
         if self.action_arrow is not None:
             self.action_arrow.remove()
             self.action_arrow = None
-        if delta[0] != 0 or delta[1] != 0:
+        if delta is not None and (delta[0] != 0 or delta[1] != 0):
             delta /= np.linalg.norm(delta) * Environment.ARROW_SIZE
             self.action_arrow = plt.arrow(*self.pos, *delta, head_width=0.3, fill=False)
 
