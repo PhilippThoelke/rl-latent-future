@@ -53,7 +53,7 @@ def simulate(weights, epsilon):
         # save the observations
         if len(observations) > 0:
             observations[-1].extend([reward, state])
-        if not done and prediction is not None:
+        if not done:
             observations.append([state, prediction, action])
     return observations, env
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
         results = Parallel(n_jobs=-1)(delayed(simulate)(*params) for _ in range(SIMULATION_EPOCHS))
 
         # get observations and cumulative rewards from the results list
-        observations = np.concatenate([current[0] for current in results], axis=0)
+        observations = sum([current[0] for current in results], [])
         mean_rewards = np.mean([current[1].cumulative_reward for current in results])
 
         # decay the exploration rate
