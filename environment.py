@@ -6,7 +6,7 @@ class Environment:
 
     DELTA_TIME = 0.01
     MOVE_FORCE = 50
-    SIMULATION_STEPS = 150
+    SIMULATION_STEPS = 50
     MAX_POS = 10
     PLOT_TITLE = 'steps={}, cumulative_reward={:.2f}'
     ARROW_SIZE = 1
