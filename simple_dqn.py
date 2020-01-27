@@ -3,9 +3,10 @@ import tensorflow as tf
 from tensorflow.keras import models, layers, optimizers
 import numpy as np
 from datetime import datetime
-import os
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
+from reward_plot import RewardPlot
+import os
 
 GAMMA = 0.7
 LEARNING_RATE = 0.001
@@ -82,6 +83,7 @@ def plot_simulation(env, model):
 if __name__ == '__main__':
     model = get_model()
     plot_env = None
+    reward_plot = RewardPlot()
 
     # create folder for model checkpoints
     timestamp = datetime.now().strftime('%Y_%m_%d-%H_%M_%S')
@@ -100,10 +102,14 @@ if __name__ == '__main__':
         delayed_call = (delayed(simulate)(*params) for _ in range(SIMULATION_EPOCHS))
         results = Parallel(n_jobs=-1)(delayed_call)
 
-        # extract x, y and cumulative rewards from results
+        # extract state-Q value pairs from results
         x = np.array(sum([res[0] for res in results], []))
         y = np.array(sum([res[1] for res in results], []))
-        mean_rewards = np.mean([res[2] for res in results])
+
+        # get the cumulative rewards from all simulations
+        cumulative_rewards = [res[2] for res in results]
+        mean_reward = np.mean(cumulative_rewards)
+        reward_plot.update(cumulative_rewards)
 
         # decay the exploration rate
         epsilon *= EPSILON_DECAY
@@ -124,11 +130,11 @@ if __name__ == '__main__':
                 model.train_on_batch(x[start:end], y[start:end])
 
         # save the current model to disk
-        model.save(os.path.join('models', timestamp, f'model_{iteration}_{int(mean_rewards)}.h5'))
+        model.save(os.path.join('models', timestamp, f'model_{iteration}_{int(mean_reward)}.h5'))
 
         # evaluate the training state
         loss = model.evaluate(x, y, verbose=0)
-        print(f'Current epsilon: {epsilon:.2f}, loss: {loss:.4f}, avg. cumulative reward: {mean_rewards:.2f}')
+        print(f'Current epsilon: {epsilon:.2f}, loss: {loss:.4f}, avg. cumulative reward: {mean_reward:.2f}')
 
         # visualize the model's progress by plotting a simulation
         if SHOW_AFTER_ITERATIONS > 0 and iteration % SHOW_AFTER_ITERATIONS == 0:
