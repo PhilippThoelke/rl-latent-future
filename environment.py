@@ -1,10 +1,6 @@
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
-import gc
-
-# default backend causes Tcl_AsyncDelete error
-matplotlib.use('Tkagg')
 
 class Environment:
 
@@ -25,24 +21,19 @@ class Environment:
         self.steps = None
         self.cumulative_reward = None
 
+        if self.draw:
+            # declare plot related fields
+            self.fig = None
+            self.title = None
+            self.marker = None
+            self.action_arrow = None
+
         # initialize
         self.goal = np.zeros(2, dtype=np.float32)
         self.action_deltas = np.array([[-1, 1], [0, 1], [1, 1],
                                        [-1, 0], [1, 0], [-1, -1],
                                        [0, -1], [1, -1], [0, 0]], dtype=np.float32)
         self.reset()
-
-        if self.draw:
-            # set up the plot for rendering the simulation
-            self.fig = plt.figure()
-            self.title = plt.title(Environment.PLOT_TITLE.format(self.steps, self.cumulative_reward))
-            self.marker = plt.plot(*self.pos, marker='o')[0]
-            self.action_arrow = None
-            plt.plot(*self.goal, marker='o')
-
-            plt.xlim([-Environment.MAX_POS, Environment.MAX_POS])
-            plt.ylim([-Environment.MAX_POS, Environment.MAX_POS])
-            plt.show(block=False)
 
     def step(self, action):
         # apply force given by the action
@@ -75,12 +66,10 @@ class Environment:
             if plt.fignum_exists(self.fig.number):
                 self._draw(delta=delta)
                 if done and self.autoclose:
-                    plt.close()
-                    gc.collect()
+                    plt.close(self.fig)
             else:
                 # figure was closed, end the simulation
                 done = True
-                gc.collect()
 
         # return the current observations
         return self.state(), reward, done
@@ -96,9 +85,24 @@ class Environment:
         self.vel = np.zeros(2, dtype=np.float32)
         self.steps = 0
         self.cumulative_reward = 0
-        # draw the new environment state
+
         if self.draw:
-            self._draw
+            if self.fig is not None and plt.fignum_exists(self.fig.number):
+                plt.close(self.fig)
+
+            # set up the plot for rendering the simulation
+            self.fig = plt.figure()
+            self.title = plt.title(Environment.PLOT_TITLE.format(self.steps, self.cumulative_reward))
+            self.marker = plt.plot(*self.pos, marker='o')[0]
+            self.action_arrow = None
+            plt.plot(*self.goal, marker='o')
+
+            plt.xlim([-Environment.MAX_POS, Environment.MAX_POS])
+            plt.ylim([-Environment.MAX_POS, Environment.MAX_POS])
+            plt.show(block=False)
+
+            # draw the new environment state
+            self._draw()
 
     def _draw(self, delta=None):
         # update the plot title
