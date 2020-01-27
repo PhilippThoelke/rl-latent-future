@@ -12,8 +12,8 @@ GAMMA = 0.7
 LEARNING_RATE = 0.001
 EPSILON_DECAY = 0.975
 MIN_EPSILON = 0.03
-SIMULATION_EPOCHS = 128
-TRAINING_EPOCHS = 5
+SIMULATION_EPOCHS = 32
+TRAINING_EPOCHS = 3
 NUM_ACTIONS = 8
 SHOW_AFTER_ITERATIONS = -1
 BATCH_SIZE = 512
@@ -22,8 +22,8 @@ def get_model():
     # return a compiled model to be used as the deep Q network
     model = models.Sequential()
     model.add(layers.Input(shape=2))
-    model.add(layers.Dense(units=4, activation='sigmoid'))
-    model.add(layers.Dense(units=8))
+    # model.add(layers.Dense(units=4, activation='sigmoid'))
+    model.add(layers.Dense(units=NUM_ACTIONS))
     model.compile(loss='mse', optimizer=optimizers.RMSprop(learning_rate=LEARNING_RATE))
     return model
 
