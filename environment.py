@@ -1,6 +1,10 @@
 import numpy as np
+import matplotlib
 from matplotlib import pyplot as plt
 import gc
+
+# default backend causes Tcl_AsyncDelete error
+matplotlib.use('Tkagg')
 
 class Environment:
 
