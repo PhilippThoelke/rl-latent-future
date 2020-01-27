@@ -130,3 +130,6 @@ dmypy.json
 
 # models folder
 models/
+
+# world models folder
+world_models/
