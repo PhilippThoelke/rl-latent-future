@@ -17,6 +17,7 @@ TRAINING_EPOCHS = 3
 NUM_ACTIONS = 8
 SHOW_AFTER_ITERATIONS = -1
 BATCH_SIZE = 512
+SIMULATION_STEPS = 50
 
 def get_model():
     # return a compiled model to be used as the deep Q network
@@ -33,7 +34,7 @@ def simulate(weights, epsilon):
     model.set_weights(weights)
 
     # set up the environment
-    env = Environment()
+    env = Environment(simulation_steps=SIMULATION_STEPS)
     state = env.state()
 
     done = False
@@ -139,6 +140,6 @@ if __name__ == '__main__':
         # visualize the model's progress by plotting a simulation
         if SHOW_AFTER_ITERATIONS > 0 and iteration % SHOW_AFTER_ITERATIONS == 0:
             if plot_env is None:
-                plot_env = Environment(draw=True)
+                plot_env = Environment(draw=True, simulation_steps=150)
             plot_simulation(plot_env, model)
         print()

@@ -6,14 +6,14 @@ class Environment:
 
     DELTA_TIME = 0.01
     MOVE_FORCE = 50
-    SIMULATION_STEPS = 50
     MAX_POS = 10
     PLOT_TITLE = 'steps={}, cumulative_reward={:.2f}'
     ARROW_SIZE = 1
 
-    def __init__(self, draw=False, autoclose=True):
+    def __init__(self, draw=False, autoclose=True, simulation_steps=150):
         self.draw = draw
         self.autoclose = autoclose
+        self.simulation_steps = simulation_steps
 
         # declare environment state
         self.pos = None
@@ -59,7 +59,7 @@ class Environment:
         self.steps += 1
 
         # determine if the simulation has finished
-        done = self.steps >= Environment.SIMULATION_STEPS
+        done = self.steps >= self.simulation_steps
 
         if self.draw:
             # render the current state if the figure wasn't closed
