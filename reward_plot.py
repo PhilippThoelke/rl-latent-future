@@ -35,7 +35,10 @@ class RewardPlot:
             self.std_rewards = np.append(self.std_rewards, np.std(rewards))
 
             # update the plot's internal data
-            epoch_time = np.mean(self.times[1:] - self.times[:-1])
+            if len(self.times) == 1:
+                epoch_time = self.times[0]
+            else:
+                epoch_time = np.mean(self.times[1:] - self.times[:-1])
             self.title.set_text(RewardPlot.PLOT_TITLE.format(len(self.mean_rewards), epoch_time))
             self.graph.set_data(self.times, self.mean_rewards)
 
