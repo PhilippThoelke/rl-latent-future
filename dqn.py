@@ -51,14 +51,14 @@ def simulate(weights, epsilon):
             # best predicted action (exploitation)
             action = np.argmax(prediction)
 
-        # simulate one step
-        state, reward, done = env.step(action)
-
         # save the observations
         if len(observations) > 0:
             observations[-1].extend([reward, state])
-        if not done:
-            observations.append([state, prediction, action])
+        observations.append([state, prediction, action])
+
+        # simulate one step
+        state, reward, done = env.step(action)
+    observations = observations[:-1]
 
     # preprocess the observation tuples
     for i, current in enumerate(observations):
