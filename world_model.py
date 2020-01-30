@@ -19,6 +19,7 @@ def get_models():
 
     # build encoder and decoder model
     encoder = models.Model(inputs=encoder_input, outputs=latent_space)
+    encoder.compile(loss='mse', optimizer='adam')
     decoder = models.Model(inputs=decoder_input, outputs=output_layer)
 
     # build and compile the autoencoder model
@@ -51,9 +52,9 @@ SIMULATIONS = 128
 SIMULATION_STEPS = 150
 EPOCHS = 10
 BATCH_SIZE = 1024
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.1
 LATENT_DIM = 2
-PREDICTION_OFFSET = 50
+PREDICTION_OFFSET = 25
 
 if __name__ == '__main__':
     # instantiate the models
