@@ -133,3 +133,6 @@ models/
 
 # world models folder
 world_models/
+
+# dqn models using the world model
+models_combined/
